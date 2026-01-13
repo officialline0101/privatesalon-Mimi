@@ -611,7 +611,7 @@
             </div>
 
             <div class="submit-area" id="submitSection">
-                <button class="submit-button" onclick="submitForm()">予約をリクエストする</button>
+                <button class="submit-button" onclick="submitForm()">予約を送信</button>
             </div>
 
         </div></div><script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -890,7 +890,7 @@ let optionHtml = 'なし';
                 optionsText = selectedOptions.map(o => o.name).join(', ');
             }
 
-            const sendText = `【予約リクエスト】
+            const sendText = `【予約フォーム】
 《お名前》
 ${name}
 《電話番号》
@@ -928,3 +928,4 @@ ${message || 'なし'}`;
     </script>
 </body>
 </html>
+
