@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約フォーム</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        /* ベーススタイル */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 5px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background-color: #fdfdfd;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 96%;
+            max-width: 500px;
+            padding: 25px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #45c4b7, #45c4b7);
+            color: white;
+            padding: 20px;
+            border-radius: 0 0px 0px 0px;
+            text-align: center;
+            display: block;
+            margin: -20px -15px 20px -15px;
+            font-size: 26px;
+            font-weight: 100;
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .small-text {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* ラベルスタイル */
+        .label, .labelkibounitizi, .labelmessezi, .labeltyuuou {
+            display: block;
+            padding: 5px;
+            font-weight: 400;
+            background-color: #45c4b7;
+            color: #ffffff;
+            font-size: 18px;
+            text-align: center;
+            position: relative;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .label { text-indent: 0; }
+
+        /* 必須・任意バッジ */
+        .required {
+            color: #ffffff;
+            font-weight: lighter;
+            font-size: 0.6em;
+            margin-left: 10px;
+            vertical-align: middle;
+            background-color: rgb(255, 15, 15);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .optional {
+            color: #ffffff;
+            font-weight: lighter;
+            font-size: 0.6em;
+            margin-left: 10px;
+            vertical-align: middle;
+            background-color: #888888;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* 入力フォーム */
+        input[type="text"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #555555;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            appearance: none; /* スマホでのデフォルトスタイル解除 */
+        }
+        
+        /* Select矢印調整 */
+        select {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+            background-color: #fff;
+        }
+
+        /* ボタン群のスタイル */
+        .selection-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .selection-group button {
+            flex: 1 1 45%; /* 2列表示 */
+            padding: 12px;
+            border: 1px solid #2e2e2e;
+            border-radius: 4px;
+            background-color: #f7f7f7;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .selection-group button.active {
+            background-color: #3e3f41;
+            color: #ffffff;
+            border-color: #3e3f41;
+            transform: scale(1.02);
+        }
+
+        /* カテゴリーボタンスタイル */
+        .category-buttons button {
+            background-color: #e0f7fa;
+            border-color: #45c4b7;
+            font-weight: bold;
+        }
+        .category-buttons button.active {
+            background-color: #45c4b7;
+            color: white;
+        }
+
+        /* メニュー表示エリア */
+        .menu-container {
+            display: none; /* 初期は非表示 */
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .menu-container.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        .sub-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #45c4b7;
+            border-bottom: 2px solid #45c4b7;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 日時入力エリア */
+        .datetime-wrapper {
+            margin-bottom: 20px;
+        }
+        .dt-grid {
+            display: flex;
+            gap: 8px;
+        }
+        .dt-grid select {
+            flex: 1;
+            margin-bottom: 5px;
+        }
+        .placeholder {
+            display: block;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        /* 確認表示エリア */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row p {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .edit-button {
+            background: #fff;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* 送信ボタン */
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #45c4b7;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .submit-button:hover {
+            opacity: 0.9;
+        }
+
+        /* 右側追従ナビ */
+        .side-nav {
+            position: fixed;
+            right: 0;
+            top: 80%;
+            transform: translateY(-50%);
+            background: #45c4b7;
+            border-radius: 10px 0 0 10px;
+            z-index: 1000;
+            padding: 5px;
+        }
+        .side-nav a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+        }
+        .side-nav span { font-size: 16px; }
+
+        /* レスポンシブ */
+        @media (max-width: 480px) {
+            .dt-grid {
+                flex-direction: column;
+            }
+        }
+        .time-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="side-nav">
+        <a href="#submitSection">
+            <span>⇩</span>
+            <i class="fas fa-comment"></i>
+        </a>
+    </div>
+
+    <div class="container">
+        <h1>
+            <span class="small-text">店舗名</span>
+            予約フォーム
+        </h1>
+
+        <div class="label">お名前<span class="required">必須</span></div>
+        <input type="text" id="name" placeholder="お名前を入力してください">
+
+        <div class="label">電話番号<span class="required">必須</span></div>
+        <input type="tel" id="phone" placeholder="電話番号を入力してください">
+
+        <div class="label">年代<span class="optional">任意</span></div>
+        <select id="age">
+            <option value="">年代を選択してください</option>
+            <option value="10代">10代</option>
+            <option value="20代">20代</option>
+            <option value="30代">30代</option>
+            <option value="40代">40代</option>
+            <option value="50代">50代</option>
+            <option value="60代以上">60代以上</option>
+        </select>
+
+        <div class="label" id="menuArea">メニュー<span class="required">必須</span></div>
+        <p style="text-align:center; font-size:14px; margin-bottom:10px;">まずはカテゴリーをお選びください</p>
+        
+        <div class="selection-group category-buttons">
+            <button type="button" onclick="selectCategory('aroma')">アロマリンパ</button>
+            <button type="button" onclick="selectCategory('body')">もみほぐし・指圧</button>
+            <button type="button" onclick="selectCategory('head')">ドライヘッドスパ</button>
+        </div>
+
+        <div id="cat-aroma" class="menu-container">
+            <div class="sub-label">🔹 メニュー項目（1つ選択）</div>
+            <div class="selection-group menus">
+                <button type="button" onclick="selectMenuItem(this, 60)">アロマリンパマッサージ 60分</button>
+                <button type="button" onclick="selectMenuItem(this, 90)">アロマリンパマッサージ 90分</button>
+                <button type="button" onclick="selectMenuItem(this, 120)">アロマリンパマッサージ 120分</button>
+            </div>
+            <div class="sub-label">🔸 オプション項目（複数選択可）</div>
+            <div class="selection-group options">
+                <button type="button" onclick="toggleOption(this, 30)">部分リンパマッサージ 30分</button>
+                <button type="button" onclick="toggleOption(this, 30)">ドライヘッドスパ 30分</button>
+                <button type="button" onclick="toggleOption(this, 30)">足つぼ・リフレクソロジー 30分</button>
+            </div>
+        </div>
+
+        <div id="cat-body" class="menu-container">
+            <div class="sub-label">🔹 メニュー項目（1つ選択）</div>
+            <div class="selection-group menus">
+                <button type="button" onclick="selectMenuItem(this, 60)">全身もみほぐし 60分</button>
+                <button type="button" onclick="selectMenuItem(this, 90)">全身もみほぐし 90分</button>
+                <button type="button" onclick="selectMenuItem(this, 120)">全身もみほぐし 120分</button>
+                <button type="button" onclick="selectMenuItem(this, 60)">全身もみほぐし(強もみ) 60分</button>
+            </div>
+            <div class="sub-label">🔸 オプション項目（複数選択可）</div>
+            <div class="selection-group options">
+                <button type="button" onclick="toggleOption(this, 30)">部分リンパマッサージ 30分</button>
+                <button type="button" onclick="toggleOption(this, 30)">ドライヘッドスパ 30分</button>
+                <button type="button" onclick="toggleOption(this, 30)">足つぼ・リフレクソロジー 30分</button>
+            </div>
+        </div>
+
+        <div id="cat-head" class="menu-container">
+            <div class="sub-label">🔹 メニュー項目（1つ選択）</div>
+            <div class="selection-group menus">
+                <button type="button" onclick="selectMenuItem(this, 45)">ドライヘッドスパ 45分</button>
+            </div>
+            <div class="sub-label">🔸 オプション項目（複数選択可）</div>
+            <div class="selection-group options">
+                <button type="button" onclick="toggleOption(this, 30)">部分リンパマッサージ 30分</button>
+                <button type="button" onclick="toggleOption(this, 30)">足つぼ・リフレクソロジー 30分</button>
+            </div>
+        </div>
+
+        <div class="labelkibounitizi" id="kibou1">第一希望日時<span class="required">必須</span></div>
+        <div class="datetime-wrapper">
+            <span class="placeholder" id="placeholder1">⇩タップして日時を入力⇩</span>
+            <input type="hidden" id="date1">
+            <div class="dt-grid">
+                <select id="date1_day" class="datetime-input"></select>
+                <select id="date1_time" class="datetime-input"></select>
+            </div>
+        </div>
+
+        <div class="labelkibounitizi" id="kibou2">第二希望日時<span class="optional">任意</span></div>
+        <div class="datetime-wrapper">
+            <span class="placeholder" id="placeholder2">⇩タップして日時を入力⇩</span>
+            <input type="hidden" id="date2">
+            <div class="dt-grid">
+                <select id="date2_day" class="datetime-input"></select>
+                <select id="date2_time" class="datetime-input"></select>
+            </div>
+        </div>
+
+        <div class="labelmessezi">備考<br>（質問等お気軽にご記入ください）</div>
+        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea>
+
+        <div class="labeltyuuou">ご予約内容</div>
+        <div id="displayInfo">
+            </div>
+
+        <button class="submit-button" id="submitSection" onclick="submitForm()">予約を行う</button>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script>
+        // --- 状態管理用変数 ---
+        let currentCategory = null;
+        let selectedMenuName = null;
+        let selectedMenuTime = 0;
+        let selectedOptions = []; // {name: string, time: number} の配列
+        
+        // --- 設定定数 ---
+        const JP_WD = ['日', '月', '火', '水', '木', '金', '土'];
+        const pad = n => String(n).padStart(2, '0');
+
+        // 営業時間設定 (0=日曜 ... 6=土曜)
+        const WEEKLY_HOURS = {
+            0: { start: 10, end: 16 }, // 日
+            1: { start: 10, end: 18 }, // 月
+            2: { start: 10, end: 18 }, // 火
+            3: { start: 10, end: 18 }, // 水
+            4: { start: 10, end: 18 }, // 木
+            5: { start: 10, end: 18 }, // 金
+            6: { start: 10, end: 16 }  // 土
+        };
+
+        // 初期化処理
+        document.addEventListener('DOMContentLoaded', function () {
+            // LIFF初期化
+            liff.init({ liffId: '2005254357-zKma9BZk' })
+                .then(() => console.log('LIFF OK'))
+                .catch((err) => console.error('LIFF Error', err));
+
+            // ローカルストレージからの復元
+            restoreInput('name');
+            restoreInput('phone');
+
+            // 日付ピッカー初期化 (Date1, Date2)
+            initDatePickers(['date1', 'date2']);
+
+            // 初期表示更新
+            updateDisplayInfo();
+
+            // 入力監視
+            document.getElementById('name').addEventListener('input', () => {
+                saveInput('name');
+                updateDisplayInfo();
+            });
+            document.getElementById('phone').addEventListener('input', () => {
+                saveInput('phone');
+                updateDisplayInfo();
+            });
+            document.getElementById('age').addEventListener('change', updateDisplayInfo);
+            document.getElementById('message').addEventListener('input', updateDisplayInfo);
+        });
+
+        // --- カテゴリー・メニュー・オプション操作 ---
+
+        // カテゴリー選択
+        function selectCategory(catId) {
+            currentCategory = catId;
+            // リセット
+            selectedMenuName = null;
+            selectedMenuTime = 0;
+            selectedOptions = [];
+
+            // UI更新: ボタンのアクティブ化
+            document.querySelectorAll('.category-buttons button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // UI更新: コンテナの表示切替
+            document.querySelectorAll('.menu-container').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(`cat-${catId}`);
+            if (target) {
+                target.classList.add('active');
+                // 内部ボタンのリセット
+                target.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            }
+
+            updateDisplayInfo();
+        }
+
+        // メニュー項目選択（単一選択）
+        function selectMenuItem(btn, time) {
+            // 親コンテナ内のメニューボタンのアクティブ解除
+            const parent = btn.closest('.menus');
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            
+            // 選択状態へ
+            btn.classList.add('active');
+            selectedMenuName = btn.textContent;
+            selectedMenuTime = time;
+
+            updateDisplayInfo();
+        }
+
+        // オプション選択（複数選択）
+        function toggleOption(btn, time) {
+            btn.classList.toggle('active');
+            const name = btn.textContent;
+
+            if (btn.classList.contains('active')) {
+                // 追加
+                selectedOptions.push({ name: name, time: time });
+            } else {
+                // 削除
+                selectedOptions = selectedOptions.filter(opt => opt.name !== name);
+            }
+            updateDisplayInfo();
+        }
+
+        // --- 表示更新ロジック ---
+        function updateDisplayInfo() {
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            
+            // 合計時間
+            const totalTime = selectedMenuTime + selectedOptions.reduce((sum, opt) => sum + opt.time, 0);
+            const hours = Math.floor(totalTime / 60);
+            const minutes = totalTime % 60;
+            const timeStr = totalTime > 0 ? `${hours > 0 ? hours + '時間' : ''}${minutes}分` : '0分';
+
+            // メニュー表示テキスト
+            let menuHtml = '・未選択';
+            if (selectedMenuName) {
+                let catName = '';
+                if(currentCategory === 'aroma') catName = 'アロマリンパ';
+                if(currentCategory === 'body') catName = 'もみほぐし・指圧';
+                if(currentCategory === 'head') catName = 'ドライヘッドスパ';
+                
+                menuHtml = `<span style="color:#45c4b7;">[${catName}]</span><br>${selectedMenuName}`;
+            }
+
+            // オプション表示
+            let optionHtml = '・なし';
+            if (selectedOptions.length > 0) {
+                optionHtml = selectedOptions.map(o => `・${o.name}`).join('<br>');
+            }
+
+            // 日時
+            const d1 = formatDisplayDate(document.getElementById('date1').value);
+            const d2 = formatDisplayDate(document.getElementById('date2').value);
+
+            // HTML生成
+            const html = `
+                <div class="info-row">
+                    <p><span style="color:#45c4b7;"><strong>【お名前】</strong></span><br>${name || '未入力'}</p>
+                    <button class="edit-button" onclick="scrollToId('name')">修正</button>
+                </div>
+                <div class="info-row">
+                    <p><span style="color:#45c4b7;"><strong>【年代】</strong></span><br>${age || '未選択'}</p>
+                    <button class="edit-button" onclick="scrollToId('age')">修正</button>
+                </div>
+                <hr>
+                <div class="info-row">
+                    <p><span style="color:#45c4b7;"><strong>【メニュー】</strong></span><br>${menuHtml}</p>
+                    <button class="edit-button" onclick="scrollToId('menuArea')">修正</button>
+                </div>
+                <div class="info-row">
+                    <p><span style="color:#45c4b7;"><strong>【オプション】</strong></span><br>${optionHtml}</p>
+                    <button class="edit-button" onclick="scrollToId('menuArea')">修正</button>
+                </div>
+                <div class="info-row">
+                    <p><span style="color:#45c4b7;"><strong>【所要時間】</strong></span> ${timeStr}</p>
+                </div>
+                <hr>
+                <div class="info-row">
+                    <p><span style="color:#45c4b7;"><strong>【第一希望】</strong></span><br>${d1 || '未選択'}</p>
+                    <button class="edit-button" onclick="scrollToId('kibou1')">修正</button>
+                </div>
+                <div class="info-row">
+                    <p><span style="color:#45c4b7;"><strong>【第二希望】</strong></span><br>${d2 || 'なし'}</p>
+                    <button class="edit-button" onclick="scrollToId('kibou2')">修正</button>
+                </div>
+            `;
+            document.getElementById('displayInfo').innerHTML = html;
+        }
+
+        // --- 日時ピッカー関連 ---
+        function initDatePickers(ids) {
+            ids.forEach(id => {
+                const daySel = document.getElementById(`${id}_day`);
+                const timeSel = document.getElementById(`${id}_time`);
+                const hiddenInput = document.getElementById(id);
+                const placeholder = document.getElementById(`placeholder${id.slice(-1)}`);
+
+                // 日付選択肢生成（今日から90日）
+                buildDateOptions(daySel, 90);
+
+                // 初期状態
+                timeSel.innerHTML = '<option value="" selected disabled>時間を選択</option>';
+                timeSel.classList.add('time-disabled');
+
+                // 日付変更時
+                daySel.addEventListener('change', () => {
+                    const val = daySel.value;
+                    if (val) {
+                        const dateObj = new Date(val);
+                        const wd = dateObj.getDay();
+                        buildTimeOptions(timeSel, wd);
+                        timeSel.classList.remove('time-disabled');
+                    } else {
+                        timeSel.innerHTML = '<option value="" selected disabled>時間を選択</option>';
+                        timeSel.classList.add('time-disabled');
+                    }
+                    updateHiddenValue(id);
+                });
+
+                // 時間変更時
+                timeSel.addEventListener('change', () => {
+                    updateHiddenValue(id);
+                });
+            });
+        }
+
+        function buildDateOptions(select, days) {
+            select.innerHTML = '<option value="" selected disabled>日付を選択</option>';
+            const d = new Date();
+            for (let i = 0; i < days; i++) {
+                // 定休日（火曜日として設定されているコードがあったため、一旦全曜日表示し、営業時間設定に委ねるが、
+                // 元コードのロジックに従い、月・火を除外する場合は以下を有効化）
+                // const wd = d.getDay();
+                // if (wd !== 1 && wd !== 2) { ... } 
+                // 今回は営業時間設定(WEEKLY_HOURS)で制御するため、全日出力します。
+                
+                const y = d.getFullYear();
+                const m = pad(d.getMonth() + 1);
+                const dd = pad(d.getDate());
+                const wd = d.getDay();
+                
+                const val = `${y}-${m}-${dd}`;
+                const txt = `${m}/${dd}(${JP_WD[wd]})`;
+                
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.textContent = txt;
+                select.appendChild(opt);
+
+                d.setDate(d.getDate() + 1);
+            }
+        }
+
+        function buildTimeOptions(select, wd) {
+            select.innerHTML = '<option value="" selected disabled>時間</option>';
+            const conf = WEEKLY_HOURS[wd];
+            if (!conf) return; // 営業設定なし
+
+            for (let h = conf.start; h <= conf.end; h++) {
+                for (let m of [0, 30]) {
+                    // 休憩時間除外ロジック (例: 12:00-13:30)
+                    // 必要に応じて調整してください
+                    const totalM = h * 60 + m;
+                    // if (totalM >= 720 && totalM <= 810) continue; 
+
+                    const timeStr = `${pad(h)}:${pad(m)}`;
+                    const opt = document.createElement('option');
+                    opt.value = timeStr;
+                    opt.textContent = timeStr;
+                    select.appendChild(opt);
+                }
+            }
+        }
+
+        function updateHiddenValue(baseId) {
+            const d = document.getElementById(`${baseId}_day`).value;
+            const t = document.getElementById(`${baseId}_time`).value;
+            const hidden = document.getElementById(baseId);
+            const ph = document.getElementById(`placeholder${baseId.slice(-1)}`);
+
+            if (d && t) {
+                hidden.value = `${d} ${t}`;
+                ph.style.display = 'none';
+            } else {
+                hidden.value = '';
+                ph.style.display = 'block';
+            }
+            updateDisplayInfo();
+        }
+
+        function formatDisplayDate(val) {
+            if (!val) return '';
+            const [datePart, timePart] = val.split(' ');
+            const [y, m, d] = datePart.split('-');
+            return `${y}年${m}月${d}日 ${timePart}`;
+        }
+
+        // --- ユーティリティ ---
+        function saveInput(id) {
+            localStorage.setItem(id, document.getElementById(id).value);
+        }
+        function restoreInput(id) {
+            const val = localStorage.getItem(id);
+            if (val) document.getElementById(id).value = val;
+        }
+        function scrollToId(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // --- 送信処理 ---
+        function submitForm() {
+            // バリデーション
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const age = document.getElementById('age').value;
+            const date1 = document.getElementById('date1').value;
+            const date2 = document.getElementById('date2').value;
+            const message = document.getElementById('message').value;
+
+            if (!name) { alert('お名前を入力してください'); return; }
+            if (!phone) { alert('電話番号を入力してください'); return; }
+            if (!selectedMenuName) { alert('メニューを選択してください'); return; }
+            if (!date1) { alert('第一希望日時を入力してください'); return; }
+
+            // 送信テキスト作成
+            let optionsText = 'なし';
+            if (selectedOptions.length > 0) {
+                optionsText = selectedOptions.map(o => o.name).join(', ');
+            }
+
+            const sendText = `【予約フォーム】
+《お名前》
+${name}
+《電話番号》
+${phone}
+《年代》
+${age || '未選択'}
+
+《ご希望メニュー》
+【${selectedMenuName}】
+《オプション》
+${optionsText}
+
+《第一希望》
+${formatDisplayDate(date1)}
+《第二希望》
+${formatDisplayDate(date2) || 'なし'}
+
+《備考》
+${message || 'なし'}`;
+
+            // LIFF送信
+            if (!liff.isInClient()) {
+                alert('LINEアプリ内から開いてください。\n\n送信内容プレビュー:\n' + sendText);
+                return;
+            }
+
+            liff.sendMessages([{ type: 'text', text: sendText }])
+                .then(() => {
+                    liff.closeWindow();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    alert('送信に失敗しました。');
+                });
+        }
+    </script>
+</body>
+</html>
